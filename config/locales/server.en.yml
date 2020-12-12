@@ -3,3 +3,4 @@ en:
     optimized_privilege_enabled: "Enable optimized-privilege plugin"
     optimized_privilege_users: "Privileged Users"
     optimized_privilege_groups: "Privileged Groups"
+    optimized_privilege_trust_level: "Privileged Trust Level"

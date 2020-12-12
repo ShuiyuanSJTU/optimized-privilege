@@ -123,8 +123,9 @@ after_initialize do
         # Admin can delete any posts
         return true if is_admin?
         
-        # You can't delete TL3 user's posts
-        return false if post.user.has_trust_level?(TrustLevel[3])
+        # You can't delete optimized_privilege_trust_level user's posts
+        
+        return false if post.user.has_trust_level?(TrustLevel[SiteSetting.optimized_privilege_trust_level.to_i])
 
         can_moderate
       end
@@ -132,7 +133,7 @@ after_initialize do
 
       def can_delete_topic?(topic)
         !topic.trashed? &&
-        (is_admin? || (is_staff? && !topic.user.has_trust_level?(TrustLevel[3])) || (is_my_own?(topic)) || is_category_group_moderator?(topic.category)) &&
+        (is_admin? || (is_staff? && !topic.user.has_trust_level?(TrustLevel[SiteSetting.optimized_privilege_trust_level.to_i])) || (is_my_own?(topic)) || is_category_group_moderator?(topic.category)) &&
         !topic.is_category_topic? &&
         !Discourse.static_doc_topic_ids.include?(topic.id)
       end

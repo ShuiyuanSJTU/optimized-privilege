@@ -2,7 +2,12 @@ plugins:
   optimized_privilege_enabled:
     default: true
     client: true
-    
+  
+  optimized_privilege_trust_level:
+    default: 3
+    enum: "TrustLevelSetting"
+    client: true
+
   optimized_privilege_users:
     default: ""
     client: true
