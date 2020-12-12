@@ -152,13 +152,13 @@ after_initialize do
   end
   
   class ::PostSerializer
-    module OverridingRSPC
-      def reviewable_score_pending_count
+    module OverridingFlagCount
+      def reviewable_id
         0
       end
     end
     
-    prepend OverridingRSPC
+    prepend OverridingFlagCount
   end
   
 end
