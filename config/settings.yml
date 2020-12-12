@@ -4,6 +4,9 @@ plugins:
     client: true
     
   optimized_privilege_users:
-    type: user_list
+    default: ""
+    client: true
+
+  optimized_privilege_groups:
     default: ""
     client: true

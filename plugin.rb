@@ -144,7 +144,26 @@ after_initialize do
       def can_check_sso_email?(user)
         false
       end
-    
+
+      def can_silence_user?(user)
+        privileged_groups = SiteSetting.optimized_privilege_groups.split('|')
+
+        sql = <<~SQL
+                SELECT group_users.user_id
+                FROM groups
+                JOIN group_users ON group_users.group_id = groups.id
+                AND groups.name IN (:privileged_groups)
+              SQL
+        privileged_users = DB.query_single(sql, privileged_groups: privileged_groups)
+        
+        if user && is_staff? 
+          # let frontend show 500 interval error
+          raise if privileged_users.include?(user.id)
+          not(user.staff?)
+        else
+          false
+        end
+      end
     end
     
     prepend OverridingGuardian
