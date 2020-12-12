@@ -117,7 +117,7 @@ after_initialize do
         # You can delete your own posts
         return !post.user_deleted? if is_my_own?(post)
 
-        # You can delete TL3 user's posts
+        # You can't delete TL3 user's posts
         return false if post.user.has_trust_level?(TrustLevel[3])
 
         can_moderate
@@ -126,7 +126,7 @@ after_initialize do
 
       def can_delete_topic?(topic)
         !topic.trashed? &&
-        ((is_staff? && !topic.user.has_trust_level?(TrustLevel[3])) || (is_my_own?(topic)) || is_category_group_moderator?(topic.category)) &&
+        (is_admin? || (is_staff? && !topic.user.has_trust_level?(TrustLevel[3])) || (is_my_own?(topic)) || is_category_group_moderator?(topic.category)) &&
         !topic.is_category_topic? &&
         !Discourse.static_doc_topic_ids.include?(topic.id)
       end
