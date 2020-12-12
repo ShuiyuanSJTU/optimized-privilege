@@ -117,6 +117,9 @@ after_initialize do
         # You can delete your own posts
         return !post.user_deleted? if is_my_own?(post)
 
+        # Admin can delete any posts
+        return true if is_admin?
+        
         # You can't delete TL3 user's posts
         return false if post.user.has_trust_level?(TrustLevel[3])
 
