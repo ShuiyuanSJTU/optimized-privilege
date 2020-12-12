@@ -36,9 +36,12 @@ after_initialize do
           ).includes(reviewable_scores: { user: :user_stat, meta_topic: :posts })
         end
 
-        result = result.where("reviewables.created_by_id = ?", user.id)
-        
         return result if user.admin?
+        
+        privileged_users = SiteSetting.optimized_privilege_users.split('|')
+        if privileged_users.include?(user.id.to_s)
+          result = result.where("reviewables.created_by_id = ?", user.id)
+        end
 
         group_ids = SiteSetting.enable_category_group_moderation? ? user.group_users.pluck(:group_id) : []
 
@@ -102,7 +105,7 @@ after_initialize do
   
   
   class ::Guardian
-    module OverridingCanDelete
+    module OverridingGuardian
     # Deleting Methods
       def can_delete_post?(post)
         return false if !can_see_post?(post)
@@ -133,10 +136,29 @@ after_initialize do
         !topic.is_category_topic? &&
         !Discourse.static_doc_topic_ids.include?(topic.id)
       end
+      
+      def can_check_emails?(user)
+        false
+      end
+
+      def can_check_sso_email?(user)
+        false
+      end
+    
     end
     
-    prepend OverridingCanDelete
+    prepend OverridingGuardian
 
+  end
+  
+  class ::PostSerializer
+    module OverridingIRSPC
+      def include_reviewable_score_pending_count?
+        is_admin?
+      end
+    end
+    
+    prepend OverridingIRSPC
   end
   
 end
