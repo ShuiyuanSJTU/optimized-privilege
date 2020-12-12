@@ -35,13 +35,13 @@ after_initialize do
             :reviewable_histories
           ).includes(reviewable_scores: { user: :user_stat, meta_topic: :posts })
         end
-
-        return result if user.admin?
         
         privileged_users = SiteSetting.optimized_privilege_users.split('|')
         if privileged_users.include?(user.id.to_s)
           result = result.where("reviewables.created_by_id = ?", user.id)
         end
+
+        return result if user.admin?
 
         group_ids = SiteSetting.enable_category_group_moderation? ? user.group_users.pluck(:group_id) : []
 
@@ -152,13 +152,13 @@ after_initialize do
   end
   
   class ::PostSerializer
-    module OverridingIRSPC
-      def include_reviewable_score_pending_count?
-        is_admin?
+    module OverridingRSPC
+      def reviewable_score_pending_count
+        0
       end
     end
     
-    prepend OverridingIRSPC
+    prepend OverridingRSPC
   end
   
 end
