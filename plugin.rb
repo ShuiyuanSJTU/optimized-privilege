@@ -18,7 +18,7 @@ load File.expand_path('lib/optimized-privilege/engine.rb', __dir__)
 
 after_initialize do
   # https://github.com/discourse/discourse/blob/master/lib/plugin/instance.rb
-  
+
   class ::Reviewable
     module OverridingViewableBy
       def viewable_by(user, order: nil, preload: true)
@@ -106,6 +106,34 @@ after_initialize do
   
   class ::Guardian
     module OverridingGuardian
+
+      def can_banner_topic?(topic)
+        if topic && authenticated? && !topic.private_message? && is_staff?
+          privileged_users = SiteSetting.optimized_privilege_users.split('|')
+          return false if privileged_users.include?(@user.id.to_s)
+          return true
+        end
+        return false
+      end
+
+      def can_see_whispers?(_topic)
+        privileged_users = SiteSetting.optimized_privilege_users.split('|')
+        return false if privileged_users.include?(@user.id.to_s)
+        is_staff?
+      end
+
+      def can_see_flagged_posts?
+        privileged_users = SiteSetting.optimized_privilege_users.split('|')
+        return false if privileged_users.include?(@user.id.to_s)
+        is_staff?
+      end
+    
+      def can_see_deleted_posts?(category = nil)
+        privileged_users = SiteSetting.optimized_privilege_users.split('|')
+        return false if privileged_users.include?(@user.id.to_s)
+        is_staff? || is_category_group_moderator?(category)
+      end
+
     # Deleting Methods
       def can_delete_post?(post)
         return false if !can_see_post?(post)
@@ -129,7 +157,6 @@ after_initialize do
 
         can_moderate
       end
-      
 
       def can_delete_topic?(topic)
         !topic.trashed? &&
@@ -138,6 +165,16 @@ after_initialize do
         !Discourse.static_doc_topic_ids.include?(topic.id)
       end
       
+      def can_edit_staff_notes?(topic)
+        return false if anonymous? || topic.nil?
+        privileged_users = SiteSetting.optimized_privilege_users.split('|')
+        return false if privileged_users.include?(@user.id.to_s)
+        return true if is_staff?
+        return true if @user.has_trust_level?(TrustLevel[4])
+
+        is_category_group_moderator?(topic.category)
+      end
+
       def can_check_emails?(user)
         false
       end
@@ -181,4 +218,18 @@ after_initialize do
     prepend OverridingFlagCount
   end
   
+  class ::Topic
+    module OverridingPrivilege
+
+      def update_status(status, enabled, user, opts = {})
+        privileged_users = SiteSetting.optimized_privilege_users.split('|')
+        raise if privileged_users.include?(user.id.to_s)
+        super(status, enabled, user, opts)
+      end
+
+    end
+
+    prepend OverridingPrivilege
+  end
+
 end
