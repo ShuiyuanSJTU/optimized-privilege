@@ -3,16 +3,3 @@ plugins:
     default: true
     client: true
   
-  optimized_privilege_trust_level:
-    default: 3
-    enum: "TrustLevelSetting"
-
-  optimized_privilege_users:
-    default: ""
-    type: list
-    list_type: compact
-
-  optimized_privilege_groups:
-    default: ""
-    type: list
-    list_type: compact
