@@ -74,13 +74,6 @@ after_initialize do
         alias :can_split_merge_topic? :can_close_topic?
         alias :can_open_topic? :can_close_topic?
   
-        def can_edit_username?(user)
-          return false if SiteSetting.auth_overrides_username?
-          return true if is_staff?
-          return false if is_anonymous?
-          is_me?(user)
-        end
-  
       end
       
       prepend OverridingGuardian
