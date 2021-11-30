@@ -1,87 +1,81 @@
 # frozen_string_literal: true
 
-# name: optimized-privilege
+# name: optimized privilege
 # about: 
-# version: 0.1
-# authors: dujiajun
-# url: https://github.com/dujiajun/optimized-privilege.git
-
-register_asset 'stylesheets/common/optimized-privilege.scss'
-register_asset 'stylesheets/desktop/optimized-privilege.scss', :desktop
-register_asset 'stylesheets/mobile/optimized-privilege.scss', :mobile
+# version: 0.0.1
+# authors: Jiajun Du
+# url: https://github.com/ShuiyuanSJTU/optimized-privilege
+# required_version: 2.7.0
+# transpile_js: true
 
 enabled_site_setting :optimized_privilege_enabled
 
 PLUGIN_NAME ||= 'OptimizedPrivilege'
 
-load File.expand_path('lib/optimized-privilege/engine.rb', __dir__)
-
 after_initialize do
-  # https://github.com/discourse/discourse/blob/master/lib/plugin/instance.rb
-
-  if SiteSetting.optimized_privilege_enabled?
-
-    class ::TopicViewDetailsSerializer
-      module OverridingTopicViewDetailsSerializer
-        def include_can_close_topic? 
-          scope.can_close_topic?(object.topic)
+    if SiteSetting.optimized_privilege_enabled
+        module OverridingTopicViewDetailsSerializer
+            def include_can_close_topic? 
+                scope.can_close_topic?(object.topic)
+            end
         end
-        alias :include_can_split_merge_topic? :include_can_close_topic?
-        alias :include_can_archive_topic? :include_can_close_topic?
-      end
-      prepend OverridingTopicViewDetailsSerializer
+    
+        class ::TopicViewDetailsSerializer
+            prepend OverridingTopicViewDetailsSerializer
+        end
+    
+        
+        module OverridingTopicGuardian
+            def can_close_topic?(topic)
+                if SiteSetting.optimized_can_close_topic
+                    return true if super
+                    return true if is_my_own?(topic)
+                    false
+                else super
+                end
+            end
+            alias :can_open_topic? :can_close_topic?
+        end
+
+        module OverrideUserGuardian
+            def can_edit_username?(user)
+                if SiteSetting.optimized_change_username
+                    return false if SiteSetting.auth_overrides_username?
+                    return true if is_staff?
+                    return false if is_anonymous?
+                    is_me?(user)
+                else super
+                end
+              end
+        end
+        
+        class ::UsersController
+            before_action :check_change_username_limit, only: [:username]
+            after_action :add_change_username_limit, only: [:username]
+            def check_change_username_limit
+                if SiteSetting.optimized_change_username && !current_user&.staff?
+                    params.require(:username)
+                    old = ::PluginStore.get("change-username", params[:username])
+                    if old
+                        time = Time.parse(old) + SiteSetting.optimized_username_change_period * 86400
+                        if Time.now < time
+                            return render json: { success: false, message: "正处于更名间隔期，请于#{time.strftime("%Y-%m-%d %H:%M:%S %Z")}之后再尝试！" }, status: 403
+                        end
+                    end
+                end
+            end
+
+            def add_change_username_limit
+                if SiteSetting.optimized_change_username
+                    ::PluginStore.remove("change-username", params[:username])
+                    ::PluginStore.set("change-username", params[:new_username], Time.now)
+                end
+            end
+        end
+        class ::Guardian
+            prepend OverridingTopicGuardian
+            prepend OverrideUserGuardian
+        end
     end
     
-    class ::Guardian
-      module OverridingGuardian
-  
-        def can_delete_post?(post)
-          return true if super(post)
-          # You can delete your own posts
-          if is_my_own?(post)
-            return false if (SiteSetting.max_post_deletions_per_minute < 1 || SiteSetting.max_post_deletions_per_day < 1)
-            return true if !post.user_deleted?
-          end
-      
-          false
-        end
-       
-        def can_delete_topic?(topic)
-          return true if super(topic)
-          return true if is_my_own?(topic)
-          false
-        end
-  
-        def can_close_topic?(topic)
-          return true if super(topic)
-          return true if is_my_own?(topic)
-          false
-        end
-  
-        def can_toggle_topic_visibility?(topic)
-          return true if super(topic)
-          return true if is_my_own?(topic)
-          false
-        end
-  
-        def can_move_posts?(topic)
-          return true if super(topic)
-          return true if is_my_own?(topic)
-          false
-        end
-  
-        alias :can_archive_topic? :can_close_topic?
-        alias :can_split_merge_topic? :can_close_topic?
-        alias :can_open_topic? :can_close_topic?
-  
-      end
-      
-      prepend OverridingGuardian
-  
-    end
-    
-  end
-
-
-
 end
