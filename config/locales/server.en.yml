@@ -1,3 +1,6 @@
 en:
   site_settings:
     optimized_privilege_enabled: "Enable optimized-privilege plugin"
+    optimized_can_close_topic: "Allow topic owner to close topic"
+    optimized_change_username: "Allow change username"
+    optimized_username_change_period: "Frequency of changing username"
