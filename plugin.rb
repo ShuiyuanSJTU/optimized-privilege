@@ -55,7 +55,7 @@ after_initialize do
             def check_change_username_limit
                 if SiteSetting.optimized_change_username && !current_user&.staff?
                     params.require(:username)
-                    old = ::PluginStore.get("change-username", params[:username])
+                    old = ::PluginStore.get("change-username", params[:username].downcase)
                     if old
                         time = Time.parse(old) + SiteSetting.optimized_username_change_period * 86400
                         if Time.now < time
@@ -67,8 +67,8 @@ after_initialize do
 
             def add_change_username_limit
                 if SiteSetting.optimized_change_username
-                    ::PluginStore.remove("change-username", params[:username])
-                    ::PluginStore.set("change-username", params[:new_username], Time.now)
+                    ::PluginStore.remove("change-username", params[:username].downcase)
+                    ::PluginStore.set("change-username", params[:new_username].downcase, Time.now)
                 end
             end
         end
