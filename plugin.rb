@@ -33,6 +33,17 @@ after_initialize do
           else super
           end
         end
+
+        def can_delete_topic?(topic)
+          if SiteSetting.optimized_can_close_topic
+            !topic.trashed? &&
+            (is_staff? || (is_my_own?(topic) && topic.created_at) || is_category_group_moderator?(topic.category)) &&
+            !topic.is_category_topic? &&
+            !Discourse.static_doc_topic_ids.include?(topic.id)
+          else super
+          end
+        end
+
         alias :can_open_topic? :can_close_topic?
       end
 
@@ -48,9 +59,33 @@ after_initialize do
           end
       end
 
+      module OverridePostGuardian
+        def can_delete_post?(post)
+          if SiteSetting.optimized_can_close_topic
+            return false if !can_see_post?(post)
+
+            return true if is_staff? || is_category_group_moderator?(post.topic&.category)
+
+            # Can't delete posts in archived topics unless you are staff
+            return false if post.topic&.archived?
+
+            # You can delete your own posts
+            if is_my_own?(post)
+              return false if (SiteSetting.max_post_deletions_per_minute < 1 || SiteSetting.max_post_deletions_per_day < 1)
+              return true if !post.user_deleted?
+            end
+
+            false
+
+          else super
+          end
+        end
+      end
+
       class ::Guardian
         prepend OverridingTopicGuardian
         prepend OverrideUserGuardian
+        prepend OverridePostGuardian
       end
 
       class ::UsersController
