@@ -15,8 +15,8 @@ PLUGIN_NAME ||= 'OptimizedPrivilege'
 after_initialize do
   if SiteSetting.optimized_privilege_enabled
     module OverridingTopicViewDetailsSerializer
-      def include_can_close_topic?
-        scope.can_close_topic?(object.topic)
+      def include_can_archive_topic?
+        scope.can_archive_topic?(object.topic)
       end
     end
 
@@ -25,7 +25,7 @@ after_initialize do
       end
 
       module OverridingTopicGuardian
-        def can_close_topic?(topic)
+        def can_archive_topic?(topic)
           if SiteSetting.optimized_can_close_topic
             return true if super
               return true if is_my_own?(topic)
@@ -44,7 +44,6 @@ after_initialize do
           end
         end
 
-        alias :can_open_topic? :can_close_topic?
       end
 
       module OverrideUserGuardian
