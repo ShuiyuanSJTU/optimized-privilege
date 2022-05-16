@@ -18,6 +18,20 @@ after_initialize do
   Topic.register_custom_field_type 'closed_by', :integer
   User.register_custom_field_type 'last_changed_username', :datetime
 
+  TopicQuery.add_custom_filter(:closed) do |results, topic_query|
+    if topic_query.options[:closed]
+      results = results.where(closed: topic_query.options[:closed])
+    end
+    results
+  end
+
+  TopicQuery.add_custom_filter(:archived) do |results, topic_query|
+    if topic_query.options[:archived]
+      results = results.where(archived: topic_query.options[:archived])
+    end
+    results
+  end
+
   module OverridingTopic
     def update_status(status, enabled, user, opts = {})
       super
