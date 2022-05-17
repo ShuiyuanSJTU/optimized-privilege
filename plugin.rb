@@ -37,7 +37,7 @@ after_initialize do
       super
       if status == 'closed' && enabled
         self.custom_fields['closed_by'] = user.id
-        self.save!
+        self.save_custom_fields
       end
     end
   end
@@ -105,7 +105,7 @@ after_initialize do
     def add_change_username_limit
       if SiteSetting.optimized_change_username
         current_user.custom_fields['last_changed_username'] = Time.now
-        current_user.save!
+        current_user.save_custom_fields
       end
     end
   end
