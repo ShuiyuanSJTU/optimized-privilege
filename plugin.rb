@@ -32,6 +32,24 @@ after_initialize do
     results
   end
 
+  TopicsBulkAction.register_operation("open") do
+    topics.each do |t|
+      if guardian.can_moderate?(t)
+        t.update_status('closed', false, @user)
+        @changed_ids << t.id
+      end
+    end
+  end
+
+  TopicsBulkAction.register_operation("unarchive") do
+    topics.each do |t|
+      if guardian.can_moderate?(t)
+        t.update_status('archived', false, @user)
+        @changed_ids << t.id
+      end
+    end
+  end
+
   module OverridingTopic
     def update_status(status, enabled, user, opts = {})
       super

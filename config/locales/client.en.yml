@@ -1,0 +1,6 @@
+en:
+  js:
+    topics:
+      bulk:
+        open_topics: "Open"
+        unarchive_topics: "Unarchive"
