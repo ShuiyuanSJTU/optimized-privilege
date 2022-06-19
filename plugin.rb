@@ -12,7 +12,6 @@ enabled_site_setting :optimized_privilege_enabled
 
 PLUGIN_NAME ||= 'OptimizedPrivilege'
 
-
 after_initialize do
 
   Topic.register_custom_field_type 'closed_by', :integer
@@ -58,6 +57,32 @@ after_initialize do
         self.save_custom_fields
       end
     end
+
+    def add_moderator_post(user, text, opts = nil)
+      opts ||= {}
+      new_post = nil
+      creator = PostCreator.new(user,
+                              raw: text,
+                              post_type: opts[:post_type] || Post.types[:moderator_action],
+                              action_code: opts[:action_code],
+                              no_bump: opts[:bump].blank?,
+                              topic_id: self.id,
+                              silent: opts[:silent],
+                              skip_validations: true,
+                              skip_guardian: true,
+                              custom_fields: opts[:custom_fields],
+                              import_mode: opts[:import_mode])
+
+      if (new_post = creator.create) && new_post.present?
+        increment!(:moderator_posts_count) if new_post.persisted?
+        new_post.update!(post_number: opts[:post_number], sort_order: opts[:post_number]) if opts[:post_number].present?
+
+        TopicLink.extract_from(new_post)
+        QuotedPost.extract_from(new_post)
+      end
+
+      new_post
+    end
   end
 
   class ::Topic
@@ -80,7 +105,7 @@ after_initialize do
         return true if super
         if is_my_own?(topic) && (!topic.closed || (topic.closed && topic.custom_fields['closed_by'] == @user&.id))
           # 自己的话题：自己可以关闭，或者打开被自己关的
-          return true 
+          return true
         end
           false
       else super
@@ -127,6 +152,5 @@ after_initialize do
       end
     end
   end
-
 
 end
