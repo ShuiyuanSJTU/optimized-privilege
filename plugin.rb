@@ -125,9 +125,24 @@ after_initialize do
       end
   end
 
+  module OverridePostGuardian
+    def can_view_edit_history?(post)
+      return false unless post
+
+      if !post.hidden
+        return true if post.wiki || SiteSetting.edit_history_visible_to_public
+      end
+
+      authenticated? &&
+      (is_staff? || @user.has_trust_level?(TrustLevel[4]) || @user.id == post.user_id) &&
+      can_see_post?(post)
+    end
+  end
+
   class ::Guardian
     prepend OverridingTopicGuardian
     prepend OverrideUserGuardian
+    prepend OverridePostGuardian
   end
 
   class ::UsersController
