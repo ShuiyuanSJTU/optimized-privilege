@@ -2,7 +2,7 @@
 
 # name: optimized privilege
 # about:
-# version: 0.0.1
+# version: 1.0.0
 # authors: Jiajun Du
 # url: https://github.com/ShuiyuanSJTU/optimized-privilege
 # required_version: 2.7.0
@@ -100,7 +100,7 @@ after_initialize do
 
     def affected_by_slow_mode?(topic)
       topic&.slow_mode_seconds.to_i > 0 && @user.human? &&
-      !(is_staff? || @user.has_trust_level?(TrustLevel[4]))
+      !(is_staff_or_tl4?)
     end
   end
 
@@ -125,12 +125,25 @@ after_initialize do
       end
 
       authenticated? &&
-      (is_staff? || @user.has_trust_level?(TrustLevel[4]) || @user.id == post.user_id) &&
+      (is_staff_or_tl4? || @user.id == post.user_id) &&
       can_see_post?(post)
+    end
+
+    def can_delete_post?(post)
+      Rails.logger.info(post.post_type)
+      if post.post_type == Post.types[:small_action] && !is_staff_or_tl4?
+        return false
+      end
+      super
     end
   end
 
   class ::Guardian
+
+    def is_staff_or_tl4?
+      is_staff? || @user.has_trust_level?(TrustLevel[4])
+    end
+
     prepend OverridingTopicGuardian
     prepend OverrideUserGuardian
     prepend OverridePostGuardian
