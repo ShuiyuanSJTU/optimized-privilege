@@ -93,9 +93,9 @@ after_initialize do
         return true if !topic.closed # 自己可以关闭
 
         # 或者打开被自己关的（需要设置支持）
-        if SiteSetting.optimized_can_open_topic_closed_by_self && 
-          topic.closed && topic.custom_fields['closed_by'] == @user&.id 
-          return true 
+        if SiteSetting.optimized_can_open_topic_closed_by_self &&
+          topic.closed && topic.custom_fields['closed_by'] == @user&.id
+          return true
         end
         false
       else super
