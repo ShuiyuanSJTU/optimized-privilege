@@ -1,6 +1,7 @@
 zh_CN:
   site_settings:
     optimized_privilege_enabled: "启用权限优化插件"
-    optimized_can_close_topic: "允许楼主关闭回复"
+    optimized_can_close_topic: "允许楼主关闭话题的回复"
+    optimized_can_open_topic_closed_by_self: "允许楼主打开被自己关闭的话题"
     optimized_change_username: "优化更改用户名间隔"
     optimized_username_change_period: "更改用户名间隔"

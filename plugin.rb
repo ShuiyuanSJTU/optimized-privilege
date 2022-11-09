@@ -89,11 +89,15 @@ after_initialize do
     def can_close_topic?(topic)
       if SiteSetting.optimized_can_close_topic
         return true if super
-        if is_my_own?(topic) && (!topic.closed || (topic.closed && topic.custom_fields['closed_by'] == @user&.id))
-          # 自己的话题：自己可以关闭，或者打开被自己关的
-          return true
+        return false if !is_my_own?(topic) # 只能操作自己的话题
+        return true if !topic.closed # 自己可以关闭
+
+        # 或者打开被自己关的（需要设置支持）
+        if SiteSetting.optimized_can_open_topic_closed_by_self && 
+          topic.closed && topic.custom_fields['closed_by'] == @user&.id 
+          return true 
         end
-          false
+        false
       else super
       end
     end

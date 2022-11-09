@@ -3,6 +3,9 @@ plugins:
     default: true
   optimized_can_close_topic:
     default: true
+  optimized_can_open_topic_closed_by_self:
+    client: true
+    default: true
   optimized_change_username:
     default: true
   optimized_username_change_period:
