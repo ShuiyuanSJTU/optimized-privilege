@@ -134,7 +134,6 @@ after_initialize do
     end
 
     def can_delete_post?(post)
-      Rails.logger.info(post.post_type)
       if post.post_type == Post.types[:small_action] && !is_staff_or_tl4?
         return false
       end
