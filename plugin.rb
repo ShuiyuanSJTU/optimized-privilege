@@ -175,25 +175,4 @@ after_initialize do
     end
   end
 
-  module OverrideChatGuardianExtensions
-    def can_restore_chat?(message, chatable)
-      return false if !can_modify_channel_message?(message.chat_channel)
-  
-      if message.user_id == current_user.id && message.deleted_by_id == current_user.id
-        case chatable
-        when Category
-          return can_see_category?(chatable)
-        when DirectMessage
-          return true
-        end
-      end
-  
-      can_delete_other_chats?(chatable)
-    end
-  end
-
-  class ::Chat::GuardianExtensions
-    prepend OverrideChatGuardianExtensions
-  end
-
 end
