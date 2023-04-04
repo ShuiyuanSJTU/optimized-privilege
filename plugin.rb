@@ -2,7 +2,7 @@
 
 # name: optimized privilege
 # about:
-# version: 1.0.0
+# version: 1.0.1
 # authors: Jiajun Du
 # url: https://github.com/ShuiyuanSJTU/optimized-privilege
 # required_version: 2.7.0
@@ -68,6 +68,24 @@ after_initialize do
       end
 
       new_post
+    end
+
+    def update_status(status, enabled, user, opts = {})
+      if status == 'closed' && enabled
+        if Guardian.new(user).affected_by_slow_mode?(self)
+          tu = TopicUser.find_by(user: user, topic: self)
+  
+          if tu&.last_posted_at
+            threshold = tu.last_posted_at + self.slow_mode_seconds.seconds
+  
+            if DateTime.now < threshold
+              raise Discourse::InvalidAccess.new("当前处于慢速模式，请于#{threshold.strftime("%Y-%m-%d %H:%M:%S %Z")}之后再尝试！")
+            end
+          end
+        end
+      end
+      
+      super
     end
   end
 
