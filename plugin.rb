@@ -172,9 +172,9 @@ after_initialize do
       if SiteSetting.optimized_anonymous_instead_of_destroy
         @user = fetch_user_from_params
         guardian.ensure_can_delete_user!(@user)
-    
-        UserAnonymizer.make_anonymous(@user,current_user)
-    
+
+        UserAnonymizer.make_anonymous(@user, current_user)
+
         render json: success_json
       else
         super
