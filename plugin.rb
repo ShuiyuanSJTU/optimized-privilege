@@ -2,8 +2,8 @@
 
 # name: optimized privilege
 # about:
-# version: 1.0.1
-# authors: Jiajun Du
+# version: 1.0.2
+# authors: Jiajun Du, pangbo
 # url: https://github.com/ShuiyuanSJTU/optimized-privilege
 # required_version: 2.7.0
 # transpile_js: true
@@ -167,7 +167,23 @@ after_initialize do
     prepend OverridePostGuardian
   end
 
+  module OverrideUsersController
+    def destroy
+      if SiteSetting.optimized_anonymous_instead_of_destroy
+        @user = fetch_user_from_params
+        guardian.ensure_can_delete_user!(@user)
+    
+        UserAnonymizer.make_anonymous(@user,current_user)
+    
+        render json: success_json
+      else
+        super
+      end
+    end
+  end
+
   class ::UsersController
+    prepend OverrideUsersController
     before_action :check_change_username_limit, only: [:username]
     after_action :add_change_username_limit, only: [:username]
     def check_change_username_limit

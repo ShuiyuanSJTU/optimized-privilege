@@ -10,3 +10,5 @@ plugins:
     default: true
   optimized_username_change_period:
     default: 180
+  optimized_anonymous_instead_of_destroy:
+    default: false

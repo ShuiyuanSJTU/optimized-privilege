@@ -5,3 +5,4 @@ en:
     optimized_can_open_topic_closed_by_self: "Allow topic owner to open topic closed by self"
     optimized_change_username: "Allow change username"
     optimized_username_change_period: "Frequency of changing username"
+    optimized_anonymous_instead_of_destroy: "When user deletes self, anonymize user instead of deleting"

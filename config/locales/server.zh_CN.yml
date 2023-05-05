@@ -5,3 +5,4 @@ zh_CN:
     optimized_can_open_topic_closed_by_self: "允许楼主打开被自己关闭的话题"
     optimized_change_username: "优化更改用户名间隔"
     optimized_username_change_period: "更改用户名间隔"
+    optimized_anonymous_instead_of_destroy: "当用户删除自己时，匿名化用户而不是删除账户"
