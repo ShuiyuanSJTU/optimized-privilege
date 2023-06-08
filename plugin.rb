@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# name: optimized privilege
+# name: optimized-privilege
 # about:
 # version: 1.0.2
 # authors: Jiajun Du, pangbo
