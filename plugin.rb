@@ -2,7 +2,7 @@
 
 # name: optimized-privilege
 # about:
-# version: 1.0.2
+# version: 1.0.3
 # authors: Jiajun Du, pangbo
 # url: https://github.com/ShuiyuanSJTU/optimized-privilege
 # required_version: 2.7.0
@@ -206,4 +206,19 @@ after_initialize do
     end
   end
 
+  module OverrideTopicQuery
+    def list_private_messages_warnings(user)
+      if @user.staff?
+        user_warning_topic_ids = UserWarning.where(user_id:user.id).pluck(:topic_id)
+        list = Topic.where(id: user_warning_topic_ids)
+        create_list(:private_messages, {}, list)
+      else
+        super
+      end
+    end
+  end
+
+  class ::TopicQuery
+    prepend OverrideTopicQuery
+  end 
 end
