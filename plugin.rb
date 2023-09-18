@@ -220,5 +220,17 @@ after_initialize do
 
   class ::TopicQuery
     prepend OverrideTopicQuery
-  end 
+  end
+
+  register_user_destroyer_on_content_deletion_callback(
+    Proc.new begin |user|
+      if SiteSetting.optimized_keep_topics_when_destroy_user
+        target_user = User.find_by(id: SiteSetting.optimized_keep_topics_when_destroy_user)
+        user.topics.where(deleted_at:nil).each do |t|
+          t.update(user_id: target_user.id)
+          t.first_post.update(user_id: target_user.id)
+        end
+      end
+    end,
+  )
 end
