@@ -2,7 +2,7 @@
 
 # name: optimized-privilege
 # about:
-# version: 1.0.3
+# version: 1.0.4
 # authors: Jiajun Du, pangbo
 # url: https://github.com/ShuiyuanSJTU/optimized-privilege
 # required_version: 2.7.0
