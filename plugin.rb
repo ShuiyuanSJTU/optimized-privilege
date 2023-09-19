@@ -2,7 +2,7 @@
 
 # name: optimized-privilege
 # about:
-# version: 1.0.3
+# version: 1.0.4
 # authors: Jiajun Du, pangbo
 # url: https://github.com/ShuiyuanSJTU/optimized-privilege
 # required_version: 2.7.0
@@ -220,5 +220,17 @@ after_initialize do
 
   class ::TopicQuery
     prepend OverrideTopicQuery
-  end 
+  end
+
+  register_user_destroyer_on_content_deletion_callback(
+    Proc.new { |user|
+      if SiteSetting.optimized_keep_topics_when_destroy_user
+        target_user = User.find_by(username: SiteSetting.optimized_topics_move_to_when_destroy_user)
+        user.topics.where(deleted_at:nil).each do |t|
+          t.update(user_id: target_user.id)
+          t.first_post.update(user_id: target_user.id)
+        end
+      end
+    },
+  )
 end

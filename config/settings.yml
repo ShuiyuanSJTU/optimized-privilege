@@ -12,3 +12,8 @@ plugins:
     default: 180
   optimized_anonymous_instead_of_destroy:
     default: false
+  optimized_keep_topics_when_destroy_user:
+    default: false
+  optimized_topics_move_to_when_destroy_user:
+    type: string
+    default: system
