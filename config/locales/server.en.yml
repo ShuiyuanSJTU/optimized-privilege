@@ -9,3 +9,4 @@ en:
     optimized_keep_topics_when_destroy_user: "When deleting user, keep user's topics"
     optimized_topics_move_to_when_destroy_user: "When deleting user, move user's topics to this user"
     optimized_silenced_can_create_post_in_private_message: "Silenced user can create post in private message"
+    optimized_silenced_can_recover_post: "Silenced user can recover post"

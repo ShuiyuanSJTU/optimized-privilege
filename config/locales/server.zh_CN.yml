@@ -9,3 +9,4 @@ zh_CN:
     optimized_keep_topics_when_destroy_user: "当删除用户时，保留用户的话题"
     optimized_topics_move_to_when_destroy_user: "当删除用户时，将用户的话题移动到该用户下"
     optimized_silenced_can_create_post_in_private_message: "禁言用户可以在私信中发帖"
+    optimized_silenced_can_recover_post: "禁言用户可以恢复帖子"

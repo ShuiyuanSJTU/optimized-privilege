@@ -167,6 +167,15 @@ after_initialize do
         return true
       end
     end
+
+    # 禁止禁言用户恢复自己的帖子
+    def can_recover_post?(post)
+      if @user.silenced? && !SiteSetting.optimized_silenced_can_recover_post
+        return false
+      else
+        super
+      end
+    end
   end
 
   class ::Guardian
