@@ -44,32 +44,33 @@ after_initialize do
       end
     end
 
-    def add_moderator_post(user, text, opts = nil)
-      opts ||= {}
-      new_post = nil
-      creator = PostCreator.new(user,
-                              raw: text,
-                              post_type: opts[:post_type] || Post.types[:moderator_action],
-                              action_code: opts[:action_code],
-                              no_bump: opts[:bump].blank?,
-                              topic_id: self.id,
-                              silent: opts[:silent],
-                              skip_validations: true,
-                              skip_guardian: true,
-                              custom_fields: opts[:custom_fields],
-                              import_mode: opts[:import_mode])
+    # def add_moderator_post(user, text, opts = nil)
+    #   opts ||= {}
+    #   new_post = nil
+    #   creator = PostCreator.new(user,
+    #                           raw: text,
+    #                           post_type: opts[:post_type] || Post.types[:moderator_action],
+    #                           action_code: opts[:action_code],
+    #                           no_bump: opts[:bump].blank?,
+    #                           topic_id: self.id,
+    #                           silent: opts[:silent],
+    #                           skip_validations: true,
+    #                           skip_guardian: true,
+    #                           custom_fields: opts[:custom_fields],
+    #                           import_mode: opts[:import_mode])
 
-      if (new_post = creator.create) && new_post.present?
-        increment!(:moderator_posts_count) if new_post.persisted?
-        new_post.update!(post_number: opts[:post_number], sort_order: opts[:post_number]) if opts[:post_number].present?
+    #   if (new_post = creator.create) && new_post.present?
+    #     increment!(:moderator_posts_count) if new_post.persisted?
+    #     new_post.update!(post_number: opts[:post_number], sort_order: opts[:post_number]) if opts[:post_number].present?
 
-        TopicLink.extract_from(new_post)
-        QuotedPost.extract_from(new_post)
-      end
+    #     TopicLink.extract_from(new_post)
+    #     QuotedPost.extract_from(new_post)
+    #   end
 
-      new_post
-    end
+    #   new_post
+    # end
 
+    # 不允许在慢速模式限制中关闭话题
     def update_status(status, enabled, user, opts = {})
       if status == 'closed' && enabled
         if Guardian.new(user).affected_by_slow_mode?(self)
@@ -101,6 +102,7 @@ after_initialize do
   end
 
   module OverridingTopicGuardian
+    # https://github.com/discourse/discourse/blob/aee7197c435c44399c4bcfd6ed1c87763b726cb7/lib/guardian/topic_guardian.rb#L342
     def can_close_topic?(topic)
       if SiteSetting.optimized_can_close_topic
         return true if super
@@ -124,15 +126,17 @@ after_initialize do
   end
 
   module OverrideUserGuardian
+    # https://github.com/discourse/discourse/blob/aee7197c435c44399c4bcfd6ed1c87763b726cb7/lib/guardian/user_guardian.rb#L24
     def can_edit_username?(user)
       if SiteSetting.optimized_change_username
         return false if SiteSetting.auth_overrides_username?
           return true if is_staff?
           return false if is_anonymous?
           is_me?(user)
-      else super
+      else
+        super
       end
-      end
+    end
   end
 
   module OverridePostGuardian
@@ -167,6 +171,7 @@ after_initialize do
     prepend OverridePostGuardian
   end
 
+  # 将用户自行删除账号改为匿名化
   module OverrideUsersController
     def destroy
       if SiteSetting.optimized_anonymous_instead_of_destroy
@@ -184,6 +189,7 @@ after_initialize do
 
   class ::UsersController
     prepend OverrideUsersController
+    # 添加用户名更改间隔限制
     before_action :check_change_username_limit, only: [:username]
     after_action :add_change_username_limit, only: [:username]
     def check_change_username_limit
@@ -206,6 +212,8 @@ after_initialize do
     end
   end
 
+
+  # 允许版主列出用户的所有警告私信，即使用户已经退出了警告
   module OverrideTopicQuery
     def list_private_messages_warnings(user)
       if @user.staff?
@@ -222,6 +230,7 @@ after_initialize do
     prepend OverrideTopicQuery
   end
 
+  # 当用户删号时，保留用户的话题，并将话题移动到指定用户下
   register_user_destroyer_on_content_deletion_callback(
     Proc.new { |user|
       if SiteSetting.optimized_keep_topics_when_destroy_user
