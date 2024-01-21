@@ -10,5 +10,6 @@ zh_CN:
     optimized_topics_move_to_when_destroy_user: "当删除用户时，将用户的话题移动到该用户下"
     optimized_silenced_can_create_post_in_private_message: "禁言用户可以在私信中发帖"
     optimized_silenced_can_recover_post: "禁言用户可以恢复帖子"
+    optimized_silenced_can_wiki_post: "禁言用户可以将帖子变为 wiki"
     optimized_category_ignore_max_consecutive_replies: "以下分类的话题里忽略最大连续回复数"
     optimized_tag_ignore_max_consecutive_replies: "以下标签的话题里忽略最大连续回复数"

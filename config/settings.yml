@@ -21,6 +21,8 @@ plugins:
     default: true
   optimized_silenced_can_recover_post:
     default: true
+  optimized_silenced_can_wiki_post:
+    default: false
   optimized_category_ignore_max_consecutive_replies:
     type: category_list
     default: ""

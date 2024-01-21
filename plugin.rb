@@ -176,6 +176,15 @@ after_initialize do
         super
       end
     end
+
+    # 禁止禁言用户将帖子设置为 wiki
+    def can_wiki?(post)
+      if @user.silenced? && !SiteSetting.optimized_silenced_can_wiki_post
+        return false
+      else
+        super
+      end
+    end
   end
 
   class ::Guardian
