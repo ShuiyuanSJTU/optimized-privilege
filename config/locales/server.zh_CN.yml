@@ -8,3 +8,4 @@ zh_CN:
     optimized_anonymous_instead_of_destroy: "当用户删除自己时，匿名化用户而不是删除账户"
     optimized_keep_topics_when_destroy_user: "当删除用户时，保留用户的话题"
     optimized_topics_move_to_when_destroy_user: "当删除用户时，将用户的话题移动到该用户下"
+    optimized_silenced_can_create_post_in_private_message: "禁言用户可以在私信中发帖"

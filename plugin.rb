@@ -154,6 +154,19 @@ after_initialize do
       end
       super
     end
+
+    def can_create_post_in_topic?(topic)
+      return false if !super
+
+      # 禁止禁言用户在私信中发言
+      # 由于禁言用户在公开话题不可以发言，这里不需要再次检查话题是不是私信
+      if !SiteSetting.optimized_silenced_can_create_post_in_private_message 
+        && @user.silenced?
+        return false
+      else
+        return true
+      end
+    end
   end
 
   class ::Guardian
