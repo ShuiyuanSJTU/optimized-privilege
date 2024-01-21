@@ -10,3 +10,5 @@ en:
     optimized_topics_move_to_when_destroy_user: "When deleting user, move user's topics to this user"
     optimized_silenced_can_create_post_in_private_message: "Silenced user can create post in private message"
     optimized_silenced_can_recover_post: "Silenced user can recover post"
+    optimized_category_ignore_max_consecutive_replies: "Ignore max consecutive replies in topics of these categories"
+    optimized_tag_ignore_max_consecutive_replies: "Ignore max consecutive replies in topics of these tags"
