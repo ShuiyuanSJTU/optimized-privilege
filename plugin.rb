@@ -239,6 +239,23 @@ after_initialize do
     prepend OverrideTopicQuery
   end
 
+  module OverridePostValidator
+    def force_edit_last_validator(post)
+      if post.topic && (
+        SiteSetting.optimized_category_ignore_max_consecutive_replies.split("|").map(&:to_i).include?(post.topic.category_id) ||
+        SiteSetting.optimized_tag_ignore_max_consecutive_replies.split("|").intersect?(post.topic.tags.pluck(:name))
+      )
+        return true
+      else
+        super
+      end
+    end
+  end
+
+  class ::PostValidator
+    prepend OverridePostValidator
+  end
+
   # 当用户删号时，保留用户的话题，并将话题移动到指定用户下
   register_user_destroyer_on_content_deletion_callback(
     Proc.new { |user|

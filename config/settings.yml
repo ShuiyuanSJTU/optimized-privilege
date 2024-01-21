@@ -19,3 +19,9 @@ plugins:
     default: system
   optimized_silenced_can_create_post_in_private_message:
     default: true
+  optimized_category_ignore_max_consecutive_replies:
+    type: category_list
+    default: ""
+  optimized_tag_ignore_max_consecutive_replies:
+    type: tag_list
+    default: ""
