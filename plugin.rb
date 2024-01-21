@@ -36,14 +36,6 @@ after_initialize do
   end
 
   module OverridingTopic
-    def update_status(status, enabled, user, opts = {})
-      super
-      if status == 'closed' && enabled
-        self.custom_fields['closed_by'] = user.id
-        self.save_custom_fields
-      end
-    end
-
     # def add_moderator_post(user, text, opts = nil)
     #   opts ||= {}
     #   new_post = nil
@@ -84,6 +76,10 @@ after_initialize do
         end
       end
       super
+      if status == 'closed' && enabled
+        self.custom_fields['closed_by'] = user.id
+        self.save_custom_fields
+      end
     end
   end
 
