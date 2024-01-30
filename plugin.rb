@@ -165,7 +165,9 @@ after_initialize do
           topic.allowed_groups.all? {|g| g.staff?} &&
           (is_me?(topic.first_post.user) || topic.first_post.user.staff?)
           return true
-        else return false
+        else 
+          return false
+        end
       else
         return true
       end
