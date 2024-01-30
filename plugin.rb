@@ -159,12 +159,22 @@ after_initialize do
       return false if !super
 
       # 禁止禁言用户在私信中发言
-      # 由于禁言用户在公开话题不可以发言，这里不需要再次检查话题是不是私信
-      if @user.silenced? && !SiteSetting.optimized_silenced_can_create_post_in_private_message
-        return false
+      if @user.silenced? && !SiteSetting.optimized_silenced_can_create_post_in_private_message && topic.private_message? 
+        if topic.allowed_users.length > 0 &&
+          topic.allowed_users.all? {|u| is_me?(u) || u.staff?} &&
+          topic.allowed_groups.all? {|g| g.staff?} &&
+          (is_me?(topic.first_post.user) || topic.first_post.user.staff?)
+          return true
+        else return false
       else
         return true
       end
+    end
+
+    # 禁止禁言用户邀请用户
+    def can_invite_to?(object, groups = nil)
+      return false if @user.silenced? && !SiteSetting.optimized_silenced_can_invite_to
+      super
     end
 
     # 禁止禁言用户恢复自己的帖子

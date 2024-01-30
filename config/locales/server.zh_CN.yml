@@ -13,3 +13,4 @@ zh_CN:
     optimized_silenced_can_wiki_post: "禁言用户可以将帖子变为 wiki"
     optimized_category_ignore_max_consecutive_replies: "以下分类的话题里忽略最大连续回复数"
     optimized_tag_ignore_max_consecutive_replies: "以下标签的话题里忽略最大连续回复数"
+    optimized_silenced_can_invite_to: "禁言用户可以邀请用户加入话题"

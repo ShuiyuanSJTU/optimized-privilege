@@ -17,6 +17,8 @@ plugins:
   optimized_topics_move_to_when_destroy_user:
     type: string
     default: system
+  optimized_silenced_can_invite_to:
+    default: true
   optimized_silenced_can_create_post_in_private_message:
     default: true
   optimized_silenced_can_recover_post:

@@ -13,3 +13,4 @@ en:
     optimized_silenced_can_wiki_post: "Silenced user can wiki post"
     optimized_category_ignore_max_consecutive_replies: "Ignore max consecutive replies in topics of these categories"
     optimized_tag_ignore_max_consecutive_replies: "Ignore max consecutive replies in topics of these tags"
+    optimized_silenced_can_invite_to: "Silenced user can invite users to topic"
