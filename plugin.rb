@@ -114,11 +114,6 @@ after_initialize do
       else super
       end
     end
-
-    def affected_by_slow_mode?(topic)
-      topic&.slow_mode_seconds.to_i > 0 && @user.human? &&
-      !(is_staff_or_tl4?)
-    end
   end
 
   module OverrideUserGuardian
