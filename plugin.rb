@@ -219,6 +219,9 @@ after_initialize do
       end
     end
   end
+  on :user_anonymized do |user, opts|
+    user.set_automatic_groups
+  end
 
   class ::UsersController
     prepend OverrideUsersController
