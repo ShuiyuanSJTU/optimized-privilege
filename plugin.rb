@@ -219,8 +219,10 @@ after_initialize do
       end
     end
   end
-  on :user_anonymized do |user, opts|
+  on :user_anonymized do |opts|
+    user = opts[:user]
     user.set_automatic_groups
+    UserOption.find_by(user_id:user.id).update(hide_profile_and_presence: true)
   end
 
   class ::UsersController
