@@ -36,31 +36,32 @@ after_initialize do
   end
 
   module OverridingTopic
-    # def add_moderator_post(user, text, opts = nil)
-    #   opts ||= {}
-    #   new_post = nil
-    #   creator = PostCreator.new(user,
-    #                           raw: text,
-    #                           post_type: opts[:post_type] || Post.types[:moderator_action],
-    #                           action_code: opts[:action_code],
-    #                           no_bump: opts[:bump].blank?,
-    #                           topic_id: self.id,
-    #                           silent: opts[:silent],
-    #                           skip_validations: true,
-    #                           skip_guardian: true,
-    #                           custom_fields: opts[:custom_fields],
-    #                           import_mode: opts[:import_mode])
+    def add_moderator_post(user, text, opts = nil)
+      opts ||= {}
+      new_post = nil
+      creator = PostCreator.new(user,
+                              raw: text,
+                              post_type: opts[:post_type] || Post.types[:moderator_action],
+                              action_code: opts[:action_code],
+                              no_bump: opts[:bump].blank?,
+                              topic_id: self.id,
+                              silent: opts[:silent],
+                              skip_validations: true,
+                              # change the default value of skip_guardian to true
+                              skip_guardian: true,
+                              custom_fields: opts[:custom_fields],
+                              import_mode: opts[:import_mode])
 
-    #   if (new_post = creator.create) && new_post.present?
-    #     increment!(:moderator_posts_count) if new_post.persisted?
-    #     new_post.update!(post_number: opts[:post_number], sort_order: opts[:post_number]) if opts[:post_number].present?
+      if (new_post = creator.create) && new_post.present?
+        increment!(:moderator_posts_count) if new_post.persisted?
+        new_post.update!(post_number: opts[:post_number], sort_order: opts[:post_number]) if opts[:post_number].present?
 
-    #     TopicLink.extract_from(new_post)
-    #     QuotedPost.extract_from(new_post)
-    #   end
+        TopicLink.extract_from(new_post)
+        QuotedPost.extract_from(new_post)
+      end
 
-    #   new_post
-    # end
+      new_post
+    end
 
     # 不允许在慢速模式限制中关闭话题
     def update_status(status, enabled, user, opts = {})
