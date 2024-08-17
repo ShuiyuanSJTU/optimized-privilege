@@ -298,4 +298,15 @@ after_initialize do
       end
     },
   )
+
+  module OverridePostRevisor
+    def bump_topic
+      return if @opts[:deleting_post]
+      super
+    end
+  end
+
+  class ::PostRevisor
+    prepend OverridePostRevisor
+  end
 end
