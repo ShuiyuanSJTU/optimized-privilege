@@ -17,23 +17,23 @@ after_initialize do
   Topic.register_custom_field_type 'closed_by', :integer
   User.register_custom_field_type 'last_changed_username', :datetime
 
-  TopicsBulkAction.register_operation("open") do
-    topics.each do |t|
-      if guardian.can_moderate?(t)
-        t.update_status('closed', false, @user)
-        @changed_ids << t.id
-      end
-    end
-  end
+  # TopicsBulkAction.register_operation("open") do
+  #   topics.each do |t|
+  #     if guardian.can_moderate?(t)
+  #       t.update_status('closed', false, @user)
+  #       @changed_ids << t.id
+  #     end
+  #   end
+  # end
 
-  TopicsBulkAction.register_operation("unarchive") do
-    topics.each do |t|
-      if guardian.can_moderate?(t)
-        t.update_status('archived', false, @user)
-        @changed_ids << t.id
-      end
-    end
-  end
+  # TopicsBulkAction.register_operation("unarchive") do
+  #   topics.each do |t|
+  #     if guardian.can_moderate?(t)
+  #       t.update_status('archived', false, @user)
+  #       @changed_ids << t.id
+  #     end
+  #   end
+  # end
 
   module OverridingTopic
     def add_moderator_post(user, text, opts = nil)
