@@ -14,3 +14,4 @@ zh_CN:
     optimized_category_ignore_max_consecutive_replies: "以下分类的话题里忽略最大连续回复数"
     optimized_tag_ignore_max_consecutive_replies: "以下标签的话题里忽略最大连续回复数"
     optimized_silenced_can_invite_to: "禁言用户可以邀请用户加入话题"
+    optimized_moderators_can_see_check_email_logs: "允许版主查看“检查电子邮箱”日志"

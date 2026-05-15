@@ -286,6 +286,23 @@ after_initialize do
     prepend OverridePostValidator
   end
 
+  module OverrideUserHistory
+    def site_setting_excluded_actions
+      excluded_actions = super
+
+      if SiteSetting.optimized_privilege_enabled &&
+           SiteSetting.optimized_moderators_can_see_check_email_logs
+        excluded_actions - [:check_email]
+      else
+        excluded_actions
+      end
+    end
+  end
+
+  class << ::UserHistory
+    prepend OverrideUserHistory
+  end
+
   # 当用户删号时，保留用户的话题，并将话题移动到指定用户下
   register_user_destroyer_on_content_deletion_callback(
     Proc.new { |user|
